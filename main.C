@@ -47,9 +47,10 @@ int main(int argc, char** argv) {
     glLoadIdentity();
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     auto shader_identity = Shader("identity");
+    shader_identity.apply();
     auto cube = Cube();
 
     float t = 0.0f;
@@ -68,6 +69,7 @@ int main(int argc, char** argv) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         cube.draw();
+        SDL_GL_SwapWindow(window);
     }
 
     SDL_DestroyWindow(window);
