@@ -15,8 +15,11 @@
 #include "ShaderManager.h"
 
 using namespace std;
+using glm::vec3;
+using glm::vec4;
 
-const float STEP = 0.01f;
+const float STEP = 0.1f;
+const float ANGLE_DELTA = 3.14f;
 
 float window_width = 640.0f;
 float window_height = 480.0f;
@@ -35,6 +38,9 @@ int main(int argc, char** argv) {
         cerr << "Could not create window: " << SDL_GetError() << endl;
         return 2;
     }
+
+    SDL_ShowCursor(SDL_DISABLE);
+    SDL_SetRelativeMouseMode(SDL_TRUE);
 
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
@@ -100,6 +106,30 @@ int main(int argc, char** argv) {
                     default:
                         break;
                 }
+            } else if (event.type == SDL_MOUSEMOTION) {
+                cout << event.motion.xrel << " " << event.motion.yrel << endl;
+
+                const GLfloat X_SCALED = -(GLfloat)event.motion.xrel / window_width;
+                const GLfloat Y_SCALED = -(GLfloat)event.motion.yrel / window_height;
+
+                const GLfloat LEFT_RIGHT_ROT = X_SCALED * ANGLE_DELTA;
+                const GLfloat UP_DOWN_ROT = Y_SCALED * ANGLE_DELTA;
+
+                vec3 tempD(at - eye);
+                vec4 d(tempD.x, tempD.y, tempD.z, 0.0f);
+
+                vec3 right = cross(tempD, up);
+
+                mat4 rot;
+                rot = rotate(rot, UP_DOWN_ROT, right);
+                rot = rotate(rot, LEFT_RIGHT_ROT, up);
+
+                d = rot * d;
+
+                at.x = eye.x + d.x;
+                at.y = eye.y + d.y;
+                at.z = eye.z + d.z;
+
             }
         }
 
