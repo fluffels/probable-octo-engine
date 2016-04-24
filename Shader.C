@@ -73,6 +73,8 @@ Shader(const string &name) :
         throw LinkError(sLog);
     }
 
+    glUseProgram(_programHandle);
+
     _projectionLocation = findUniform("projection");
     _viewLocation = findUniform("view");
     _worldLocation = findUniform("world");

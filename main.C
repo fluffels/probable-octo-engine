@@ -58,17 +58,20 @@ int main(int argc, char** argv) {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     auto shaders = ShaderManager();
+
+    auto shader_transform = shaders.get("transform");
+    shader_transform->apply();
+    auto cube = Cube();
+
     auto shader_colour = shaders.get("colour");
-    shader_colour.apply();
+    shader_colour->apply();
+    auto origin = Origin();
 
     auto view = glm::lookAt(glm::vec3(0, 0, 5.0f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
     shaders.updateViewMatrices(view);
 
     auto proj = glm::perspective(45.f, 640.f / 480.f, 0.1f, -100.f);
     shaders.updateProjectionMatrices(proj);
-
-    auto cube = Cube();
-    auto origin = Origin();
 
     float angle = 0.0f;
     bool done = false;
@@ -91,6 +94,7 @@ int main(int argc, char** argv) {
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+        shader_colour->apply();
         origin.draw();
 
         glFlush();

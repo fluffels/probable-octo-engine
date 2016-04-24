@@ -31,7 +31,7 @@ public:
      * @param name The name of the shader. Corresponds to the shaders/
      * subdirectory that contains the shader programs for this shader.
      */
-    Shader& get(const string& name);
+    Shader* get(const string& name);
 
     /**
       * Update the projection matrix of all managed shaders.

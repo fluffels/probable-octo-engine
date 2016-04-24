@@ -11,7 +11,7 @@ ShaderManager::
     }
 }
 
-Shader& ShaderManager::
+Shader* ShaderManager::
 get(const string& name) {
     Shader* result = nullptr;
     for (auto shader : _shaders) {
@@ -23,7 +23,7 @@ get(const string& name) {
         result = new Shader(name);
         _shaders.push_back(result);
     }
-    return *result;
+    return result;
 }
 
 void ShaderManager::
