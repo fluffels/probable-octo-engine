@@ -1,18 +1,15 @@
 #include "CompilationError.h"
 
 CompilationError::
-CompilationError(const string& error) throw():
-   DynamicMessageException(error)
-{
+CompilationError(const string &error) throw():
+        DynamicMessageException(error) {
 }
 
 CompilationError::
-~CompilationError() throw()
-{
+~CompilationError() throw() {
 }
 
 string CompilationError::
-getPrefix() const throw()
-{
-   return "Compilation error";
+getPrefix() const throw() {
+    return "Compilation error";
 }

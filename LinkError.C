@@ -2,18 +2,14 @@
 
 LinkError::
 LinkError(string message) throw():
-   DynamicMessageException(message)
-{
+        DynamicMessageException(message) {
 }
 
 LinkError::
-~LinkError() throw()
-{
+~LinkError() throw() {
 }
 
 string LinkError::
-getPrefix() const throw()
-{
-   return "Link error";
+getPrefix() const throw() {
+    return "Link error";
 }
-

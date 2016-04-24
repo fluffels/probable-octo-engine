@@ -1,5 +1,4 @@
-#ifndef SHADER_H
-#define SHADER_H
+#pragma once
 
 #include <iostream>
 #include <string>
@@ -22,151 +21,158 @@ using std::endl;
 using std::string;
 using std::vector;
 
-class Shader
-{
-   public:
-      /**
-        * Constructor.
-        *
-        * Obtains OpenGL handles, loads shader program source, compiles and 
-        * links.
-        *
-        * @param name The shader's name. This is the name of the directory that 
-        * will be used as a prefix when loading the shader program source.
-        */
-      Shader(const string& name);
+class Shader {
+public:
+    /**
+      * Constructor.
+      *
+      * Obtains OpenGL handles, loads shader program source, compiles and
+      * links.
+      *
+      * @param name The shader's name. This is the name of the directory that
+      * will be used as a prefix when loading the shader program source.
+      */
+    Shader(const string &name);
 
-      /**
-        * Destructor.
-        *
-        * Releases OpenGL handles.
-        */
-      ~Shader();
+    /**
+      * Destructor.
+      *
+      * Releases OpenGL handles.
+      */
+    ~Shader();
 
-      /**
-        * Apply the shader.
-        *
-        * This will activate the shader on the graphics card's execution units 
-        * and load any uniforms it's using.
-        */
-      void apply();
+    /**
+      * Apply the shader.
+      *
+      * This will activate the shader on the graphics card's execution units
+      * and load any uniforms it's using.
+      */
+    void apply();
 
-      /**
-        * Helper function to find uniform values.
-        *
-        * @param name The uniform's name in the shader source.
-        *
-        * @return The uniform's location as a GLint.
-        *
-        * @throws LinkError If the uniform could not be found.
-        */
-      GLint findUniform(const char* name);
-      
-      /**
-        * Update the shader's projection matrix.
-        *
-        * @param matrix The projection matrix to pass to the shader program.
-        */
-      void updateProjectionMatrix(mat4 matrix);
+    /**
+     * Get the Shader's name.
+     * @return A string.
+     */
+    const string &getName();
 
-      /**
-        * Update the shader's view matrix.
-        *
-        * @param matrix The view matrix to pass to the shader program.
-        */
-      void updateViewMatrix(mat4 matrix);
+    /**
+      * Helper function to find uniform values.
+      *
+      * @param name The uniform's name in the shader source.
+      *
+      * @return The uniform's location as a GLint.
+      *
+      * @throws LinkError If the uniform could not be found.
+      */
+    GLint findUniform(const char *name);
 
-      /**
-        * Update the shader's world matrix.
-        *
-        * @param matrix The world matrix to pass to the shader program.
-        */
-      void updateWorldMatrix(mat4 matrix);
+    /**
+      * Update the shader's projection matrix.
+      *
+      * @param matrix The projection matrix to pass to the shader program.
+      */
+    void updateProjectionMatrix(mat4 matrix);
 
-      /**
-        * Update an arbitrary uniform. Prints a warning if the uniform could
-        * not be found.
-        *
-        * @param name The uniform's name in the shader program.
-        * @param value The uniform's new value.
-        */
-      void updateUniform(const char* name, float value);
-      void updateUniform(const char* name, mat4 value);
-      void updateUniform(const char* name, vec3 value);
+    /**
+      * Update the shader's view matrix.
+      *
+      * @param matrix The view matrix to pass to the shader program.
+      */
+    void updateViewMatrix(mat4 matrix);
 
-   private:
-      /** The OpenGL handle for this shader program. */
-      GLuint _programHandle;
-      /** The OpenGL handle for the vertex shader. */
-      GLuint _vertexShaderHandle;
-      /** The OpenGL handle for the tesselation control shader.*/
-      GLuint _tessControlHandle;
-      /** The OpenGL handle for the tesselation evaluation shader. */
-      GLuint _tessEvaluationHandle;
-      /** The OpenGL handle for the geometry shader. */
-      GLuint _geometryShaderHandle;
-      /** The OpenGL handle for the fragment shader. */
-      GLuint _fragmentShaderHandle;
+    /**
+      * Update the shader's world matrix.
+      *
+      * @param matrix The world matrix to pass to the shader program.
+      */
+    void updateWorldMatrix(mat4 matrix);
 
-      /** Shader program location of the projection matrix. */
-      GLint _projectionLocation;
-      /** Shader program location of the view matrix. */
-      GLint _viewLocation;
-      /** Shader program location of the world matrix. */
-      GLint _worldLocation;
+    /**
+      * Update an arbitrary uniform. Prints a warning if the uniform could
+      * not be found.
+      *
+      * @param name The uniform's name in the shader program.
+      * @param value The uniform's new value.
+      */
+    void updateUniform(const char *name, float value);
 
-      /** The current projection matrix. */
-      mat4 _projectionMatrix;
-      /** The current view matrix. */
-      mat4 _viewMatrix;
-      /** The current world matrix. */
-      mat4 _worldMatrix;
+    void updateUniform(const char *name, mat4 value);
 
-      /** Standard file name for the vertex shader. */
-      const static string VERTEX_SHADER_FILE_NAME;
-      /** Standard file name for the tesselation control shader. */
-      const static string TESS_CONTROL_FILE_NAME;
-      /** Standard file name for the tesselation evaluation shader. */
-      const static string TESS_EVAL_FILE_NAME;
-      /** Standard file name for the geometry shader. */
-      const static string GEOMETRY_SHADER_FILE_NAME;
-      /** Standard file name for the fragment shader. */
-      const static string FRAGMENT_SHADER_FILE_NAME;
+    void updateUniform(const char *name, vec3 value);
 
-      /**
-        * Checks if the given file exists.
-        *
-        * @param file The file to check for.
-        *
-        * @return True if the file exists, false otherwise.
-        */
-      bool fileExists(const string& file);
+private:
+    /** The shader's name. */
+    string _name;
 
-      /**
-        * Helper function to initialize a shader.
-        *
-        * @param handle An unsigned to store the OpenGL handle in.
-        * @param file The file name.
-        * @param shaderType The type of shader to initialize.
-        */
-      void initShader(unsigned& handle, const string& file, GLenum shaderType);
+    /** The OpenGL handle for this shader program. */
+    GLuint _programHandle;
+    /** The OpenGL handle for the vertex shader. */
+    GLuint _vertexShaderHandle;
+    /** The OpenGL handle for the tesselation control shader.*/
+    GLuint _tessControlHandle;
+    /** The OpenGL handle for the tesselation evaluation shader. */
+    GLuint _tessEvaluationHandle;
+    /** The OpenGL handle for the geometry shader. */
+    GLuint _geometryShaderHandle;
+    /** The OpenGL handle for the fragment shader. */
+    GLuint _fragmentShaderHandle;
 
-      /**
-        * Helper function to check whether this is the currently bound program.
-        *
-        * @return True if this is currently bound, false otherwise.
-        */
-      bool isCurrentProgram();
+    /** Shader program location of the projection matrix. */
+    GLint _projectionLocation;
+    /** Shader program location of the view matrix. */
+    GLint _viewLocation;
+    /** Shader program location of the world matrix. */
+    GLint _worldLocation;
 
-      /**
-        * Helper function to load a file in the way required of shaders.
-        * 
-        * @param name The name of the file to load.
-        *
-        * @returns The whole file as a continuous c-string.
-        */
-      char* loadFile(const string& name);
+    /** The current projection matrix. */
+    mat4 _projectionMatrix;
+    /** The current view matrix. */
+    mat4 _viewMatrix;
+    /** The current world matrix. */
+    mat4 _worldMatrix;
+
+    /** Standard file name for the vertex shader. */
+    const static string VERTEX_SHADER_FILE_NAME;
+    /** Standard file name for the tesselation control shader. */
+    const static string TESS_CONTROL_FILE_NAME;
+    /** Standard file name for the tesselation evaluation shader. */
+    const static string TESS_EVAL_FILE_NAME;
+    /** Standard file name for the geometry shader. */
+    const static string GEOMETRY_SHADER_FILE_NAME;
+    /** Standard file name for the fragment shader. */
+    const static string FRAGMENT_SHADER_FILE_NAME;
+
+    /**
+      * Checks if the given file exists.
+      *
+      * @param file The file to check for.
+      *
+      * @return True if the file exists, false otherwise.
+      */
+    bool fileExists(const string &file);
+
+    /**
+      * Helper function to initialize a shader.
+      *
+      * @param handle An unsigned to store the OpenGL handle in.
+      * @param file The file name.
+      * @param shaderType The type of shader to initialize.
+      */
+    void initShader(unsigned &handle, const string &file, GLenum shaderType);
+
+    /**
+      * Helper function to check whether this is the currently bound program.
+      *
+      * @return True if this is currently bound, false otherwise.
+      */
+    bool isCurrentProgram();
+
+    /**
+      * Helper function to load a file in the way required of shaders.
+      *
+      * @param name The name of the file to load.
+      *
+      * @returns The whole file as a continuous c-string.
+      */
+    char *loadFile(const string &name);
 };
-
-#endif
-

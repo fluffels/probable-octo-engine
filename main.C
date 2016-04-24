@@ -6,8 +6,13 @@
 #include <GL/glu.h>
 #include <SDL2/SDL_opengl.h>
 
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "Cube.h"
+#include "Origin.h"
 #include "Shader.h"
+#include "ShaderManager.h"
 
 using namespace std;
 
@@ -41,7 +46,10 @@ int main(int argc, char** argv) {
         return 4;
     }
 
-    GLenum glError = GL_NO_ERROR;
+    glEnable(GL_DEPTH);
+    glEnable(GL_VERTEX_ARRAY);
+    glEnable(GL_DEPTH_TEST);
+    glDisable(GL_CULL_FACE);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -49,11 +57,20 @@ int main(int argc, char** argv) {
     glLoadIdentity();
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    auto shader_identity = Shader("identity");
-    shader_identity.apply();
-    auto cube = Cube();
+    auto shaders = ShaderManager();
+    auto shader_colour = shaders.get("colour");
+    shader_colour.apply();
 
-    float t = 0.0f;
+    auto view = glm::lookAt(glm::vec3(0, 0, 5.0f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    shaders.updateViewMatrices(view);
+
+    auto proj = glm::perspective(45.f, 640.f / 480.f, 0.1f, -100.f);
+    shaders.updateProjectionMatrices(proj);
+
+    auto cube = Cube();
+    auto origin = Origin();
+
+    float angle = 0.0f;
     bool done = false;
     SDL_Event event;
     while (done == false) {
@@ -67,9 +84,19 @@ int main(int argc, char** argv) {
             }
         }
 
+        auto modelQuat = glm::quat();
+        modelQuat = glm::rotate(modelQuat, angle, glm::vec3(0, 1, 0));
+        auto modelMat = (glm::mat4)modelQuat;
+        shaders.updateWorldMatrices((glm::mat4)modelMat);
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        cube.draw();
+
+        origin.draw();
+
+        glFlush();
         SDL_GL_SwapWindow(window);
+
+        angle += 0.01f;
     }
 
     SDL_DestroyWindow(window);

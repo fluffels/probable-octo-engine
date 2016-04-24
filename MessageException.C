@@ -4,24 +4,20 @@
 #include "MessageException.h"
 
 MessageException::
-MessageException() throw()
-{
+MessageException() throw() {
 }
 
 MessageException::
-~MessageException() throw()
-{
+~MessageException() throw() {
 }
 
-const char* MessageException::
-what() const throw()
-{
-   return toString().c_str();
+const char *MessageException::
+what() const throw() {
+    return toString().c_str();
 }
 
 string MessageException::
-toString() const throw()
-{
-   return getPrefix() + ": " + getMessage();
+toString() const throw() {
+    return getPrefix() + ": " + getMessage();
 }
 
