@@ -87,15 +87,20 @@ int main(int argc, char** argv) {
             }
         }
 
-        auto modelQuat = glm::quat();
-        modelQuat = glm::rotate(modelQuat, angle, glm::vec3(0, 1, 0));
-        auto modelMat = (glm::mat4)modelQuat;
-        shaders.updateWorldMatrices((glm::mat4)modelMat);
-
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shader_colour->apply();
+        auto scale = glm::mat4();
+        scale = glm::scale(scale, glm::vec3(5.f, 5.f, 5.f));
+        shader_colour->updateWorldMatrix(scale);
         origin.draw();
+
+        shader_transform->apply();
+        auto modelQuat = glm::quat();
+        modelQuat = glm::rotate(modelQuat, angle, glm::vec3(0, 1, 0));
+        auto modelMat = (glm::mat4)modelQuat;
+        shader_transform->updateWorldMatrix((glm::mat4)modelMat);
+        cube.draw();
 
         glFlush();
         SDL_GL_SwapWindow(window);
