@@ -117,6 +117,14 @@ int main(int argc, char** argv) {
             eye -= right;
             at -= right;
         }
+        if (keys[SDL_SCANCODE_SPACE]) {
+            eye += STEP * up;
+            at += STEP * up;
+        }
+        if (keys[SDL_SCANCODE_LCTRL]) {
+            eye -= STEP * up;
+            at -= STEP * up;
+        }
         auto view = glm::lookAt(eye, at, up);
         shaders.updateViewMatrices(view);
 
