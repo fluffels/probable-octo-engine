@@ -3,8 +3,6 @@
 #include <SDL2/SDL.h>
 
 #include <GL/glew.h>
-#include <GL/glu.h>
-#include <SDL2/SDL_opengl.h>
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -64,10 +62,6 @@ int main(int argc, char** argv) {
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_CULL_FACE);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     auto shaders = ShaderManager();
@@ -93,7 +87,7 @@ int main(int argc, char** argv) {
     float angle = 0.0f;
     bool done = false;
     SDL_Event event;
-    while (done == false) {
+    while (!done) {
         while (SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) {
                 done = true;
@@ -161,7 +155,7 @@ int main(int argc, char** argv) {
             eye -= STEP * up;
             at -= STEP * up;
         }
-        auto view = glm::lookAt(eye, at, up);
+        view = glm::lookAt(eye, at, up);
         shaders.updateViewMatrices(view);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
