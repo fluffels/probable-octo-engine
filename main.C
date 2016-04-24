@@ -82,6 +82,7 @@ int main(int argc, char** argv) {
                 done = true;
             } else if (event.type == SDL_KEYDOWN) {
                 if (event.key.keysym.sym == SDLK_ESCAPE) {
+                    cout << "[INFO] Exiting normally at user request." << endl;
                     done = true;
                 }
             }
