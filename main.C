@@ -16,6 +16,8 @@
 
 using namespace std;
 
+const float STEP = 0.01f;
+
 int main(int argc, char** argv) {
     int result = SDL_Init(SDL_INIT_VIDEO);
     if (result != 0) {
@@ -67,7 +69,10 @@ int main(int argc, char** argv) {
     shader_colour->apply();
     auto origin = Origin();
 
-    auto view = glm::lookAt(glm::vec3(0, 0, 5.0f), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
+    auto eye = glm::vec3(0, 0, 5.0f);
+    auto at = glm::vec3(0, 0, 0);
+    auto up = glm::vec3(0, 1, 0);
+    auto view = glm::lookAt(eye, at, up);
     shaders.updateViewMatrices(view);
 
     auto proj = glm::perspective(45.f, 640.f / 480.f, 0.1f, -100.f);
@@ -81,12 +86,36 @@ int main(int argc, char** argv) {
             if (event.type == SDL_QUIT) {
                 done = true;
             } else if (event.type == SDL_KEYDOWN) {
-                if (event.key.keysym.sym == SDLK_ESCAPE) {
-                    cout << "[INFO] Exiting normally at user request." << endl;
-                    done = true;
+                switch (event.key.keysym.sym) {
+                    case SDLK_ESCAPE:
+                        cout << "[INFO] Exiting normally at user request." << endl;
+                        done = true;
+                        break;
+                    default:
+                        break;
                 }
             }
         }
+
+        glm::vec3 direction = STEP * glm::normalize(at - eye);
+        glm::vec3 right = STEP * glm::normalize(glm::cross(direction, up));
+
+        auto keys = SDL_GetKeyboardState(nullptr);
+        if (keys[SDL_SCANCODE_W]) {
+            eye += direction;
+            at += direction;
+        } else if (keys[SDL_SCANCODE_S]) {
+            eye -= direction;
+            at -= direction;
+        } else if (keys[SDL_SCANCODE_D]) {
+            eye += right;
+            at += right;
+        } if (keys[SDL_SCANCODE_A]) {
+            eye -= right;
+            at -= right;
+        }
+        auto view = glm::lookAt(eye, at, up);
+        shaders.updateViewMatrices(view);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
