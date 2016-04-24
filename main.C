@@ -18,6 +18,9 @@ using namespace std;
 
 const float STEP = 0.01f;
 
+float window_width = 640.0f;
+float window_height = 480.0f;
+
 int main(int argc, char** argv) {
     int result = SDL_Init(SDL_INIT_VIDEO);
     if (result != 0) {
@@ -25,7 +28,9 @@ int main(int argc, char** argv) {
         return 1;
     }
 
-    SDL_Window* window = SDL_CreateWindow(argv[0], 0, 0, 640, 480, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    SDL_Window* window = SDL_CreateWindow(argv[0], 0, 0, (int)window_width,
+                                          (int)window_height,
+                                          SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
     if (window == nullptr) {
         cerr << "Could not create window: " << SDL_GetError() << endl;
         return 2;
@@ -75,7 +80,8 @@ int main(int argc, char** argv) {
     auto view = glm::lookAt(eye, at, up);
     shaders.updateViewMatrices(view);
 
-    auto proj = glm::perspective(45.f, 640.f / 480.f, 0.1f, -100.f);
+    auto proj = glm::perspective(45.f, window_width / window_height, 0.1f,
+                                 -100.f);
     shaders.updateProjectionMatrices(proj);
 
     float angle = 0.0f;
