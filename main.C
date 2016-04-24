@@ -104,13 +104,16 @@ int main(int argc, char** argv) {
         if (keys[SDL_SCANCODE_W]) {
             eye += direction;
             at += direction;
-        } else if (keys[SDL_SCANCODE_S]) {
+        }
+        if (keys[SDL_SCANCODE_S]) {
             eye -= direction;
             at -= direction;
-        } else if (keys[SDL_SCANCODE_D]) {
+        }
+        if (keys[SDL_SCANCODE_D]) {
             eye += right;
             at += right;
-        } else if (keys[SDL_SCANCODE_A]) {
+        }
+        if (keys[SDL_SCANCODE_A]) {
             eye -= right;
             at -= right;
         }
