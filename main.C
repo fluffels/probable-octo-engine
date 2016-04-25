@@ -66,9 +66,9 @@ int main(int argc, char** argv) {
 
     auto shaders = ShaderManager();
 
-    auto shader_transform = shaders.get("transform");
-    shader_transform->apply();
-    auto cube = Cube();
+    auto shader_skybox = shaders.get("skybox");
+    shader_skybox->apply();
+    auto skybox = Cube();
 
     auto shader_colour = shaders.get("colour");
     shader_colour->apply();
@@ -166,12 +166,11 @@ int main(int argc, char** argv) {
         shader_colour->updateWorldMatrix(scale);
         origin.draw();
 
-        shader_transform->apply();
-        auto modelQuat = glm::quat();
-        modelQuat = glm::rotate(modelQuat, angle, glm::vec3(0, 1, 0));
-        auto modelMat = (glm::mat4)modelQuat;
-        shader_transform->updateWorldMatrix((glm::mat4)modelMat);
-        cube.draw();
+        shader_skybox->apply();
+        auto scale = glm::mat4();
+        scale = glm::scale(scale, glm::vec3(100.f, 100.f, 100.f));
+        shader_colour->updateWorldMatrix(scale);
+        skybox.draw();
 
         glFlush();
         SDL_GL_SwapWindow(window);
