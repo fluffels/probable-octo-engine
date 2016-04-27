@@ -7,6 +7,7 @@
 
 #include "easylogging++.h"
 
+#include "ColorFrameBuffer.h"
 #include "Cube.h"
 #include "CubeMap.h"
 #include "Origin.h"
@@ -28,6 +29,8 @@ const float ANGLE_DELTA = 3.14f;
 SDL_Window* window;
 float window_width = 640.0f;
 float window_height = 480.0f;
+
+ColorFrameBuffer* frame_buffer_color;
 
 ShaderManager* shaders;
 Shader* shader_colour;
@@ -60,83 +63,91 @@ void draw() {
 }
 
 int main(int argc, char** argv) {
+    /* Initialize logging. */
     START_EASYLOGGINGPP(argc, argv);
-    LOG(TRACE) << "Initializing...";
+    LOG(TRACE) << "Logging initialized.";
 
+
+    /* Initialize SDL. */
+    LOG(TRACE) << "Initializing SDL...";
     int result = SDL_Init(SDL_INIT_VIDEO);
     if (result != 0) {
         LOG(FATAL) << "Could not initialize SDL: " << SDL_GetError();
     }
-
     window = SDL_CreateWindow(argv[0], 0, 0, (int)window_width,
                               (int)window_height,
                               SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
     if (window == nullptr) {
         LOG(FATAL) << "Could not create window: " << SDL_GetError();
     }
-
     SDL_ShowCursor(SDL_DISABLE);
     SDL_SetRelativeMouseMode(SDL_TRUE);
 
+
+    /* Initialize OpenGL. */
+    LOG(TRACE) << "Initializing OpenGL...";
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
-
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     if (gl_context == nullptr) {
         LOG(FATAL) << "Could not create OpenGL context: " << SDL_GetError();
     }
-
     glewExperimental = GL_TRUE;
     GLenum glewError = glewInit();
     if (glewError != GLEW_OK) {
         LOG(FATAL) << "Could not initialize GLEW: " << glewGetErrorString(glewError);
     }
-
     glEnable(GL_DEPTH);
     glEnable(GL_VERTEX_ARRAY);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     glDisable(GL_CULL_FACE);
-
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
+
+    /* Load assets. */
+    LOG(TRACE) << "Loading assets...";
     environmentMap = new CubeMap("terrain_");
-
     shaders = new ShaderManager();
-
     shader_skybox = shaders->get("skybox");
     shader_skybox->apply();
     skybox = new Cube();
-
     shader_colour = shaders->get("colour");
     shader_colour->apply();
     origin = new Origin();
 
+
+    /* Set up camera. */
     auto camera = Camera();
     camera.eye = glm::vec3(0, 0, 5.0f);
     camera.at = glm::vec3(0, 0, 0);
     camera.up = glm::vec3(0, 1, 0);
     auto view = glm::lookAt(camera.eye, camera.at, camera.up);
     shaders->updateViewMatrices(view);
-
     auto proj = glm::perspective(45.f, window_width / window_height, 0.1f,
                                  -100.f);
     shaders->updateProjectionMatrices(proj);
 
+
+    /* Main loop. */
     float angle = 0.0f;
     bool done = false;
     SDL_Event event;
     while (!done) {
+        LOG(TRACE) << "Entering main loop...";
         while (SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) {
                 done = true;
             } else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
                     case SDLK_ESCAPE:
-                        LOG(INFO) << "Exiting normally at user request.";
+                        LOG(INFO) << "Exiting normally at user request...";
                         done = true;
                         break;
+                    case SDLK_PRINTSCREEN:
+                        LOG(INFO) << "Rendering screen shot...";
+
                     default:
                         break;
                 }
