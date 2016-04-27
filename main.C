@@ -67,8 +67,6 @@ int main(int argc, char** argv) {
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
     glActiveTexture(GL_TEXTURE0);
-    GLuint handle = 0;
-    glGenTextures(1, &handle);
     CubeMap* environmentMap = new CubeMap("terrain_");
 
     auto shaders = ShaderManager();
