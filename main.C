@@ -46,17 +46,23 @@ INITIALIZE_EASYLOGGINGPP
 void draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    shader_colour->apply();
-    auto scaleMat = glm::mat4();
-    scaleMat = glm::scale(scaleMat, glm::vec3(5.f, 5.f, 5.f));
-    shader_colour->updateWorldMatrix(scaleMat);
-    origin->draw();
+    {
+        glDisable(GL_CULL_FACE);
+        shader_skybox->apply();
+        auto scaleMat = glm::mat4();
+        scaleMat = glm::scale(scaleMat, glm::vec3(512.f, 512.f, 512.f));
+        shader_skybox->updateWorldMatrix(scaleMat);
+        skybox->draw();
+        glEnable(GL_CULL_FACE);
+    }
 
-    shader_skybox->apply();
-    scaleMat = glm::mat4();
-    scaleMat = glm::scale(scaleMat, glm::vec3(512.f, 512.f, 512.f));
-    shader_skybox->updateWorldMatrix(scaleMat);
-    skybox->draw();
+    {
+        shader_colour->apply();
+        auto scaleMat = glm::mat4();
+        scaleMat = glm::scale(scaleMat, glm::vec3(5.f, 5.f, 5.f));
+        shader_colour->updateWorldMatrix(scaleMat);
+        origin->draw();
+    }
 
     glFlush();
     SDL_GL_SwapWindow(window);
@@ -98,11 +104,7 @@ int main(int argc, char** argv) {
     if (glewError != GLEW_OK) {
         LOG(FATAL) << "Could not initialize GLEW: " << glewGetErrorString(glewError);
     }
-    glEnable(GL_DEPTH);
     glEnable(GL_VERTEX_ARRAY);
-    glEnable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
-    glDisable(GL_CULL_FACE);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 
@@ -130,12 +132,16 @@ int main(int argc, char** argv) {
     shaders->updateProjectionMatrices(proj);
 
 
+    /* Set up frame buffers. */
+    frame_buffer_color = new ColorFrameBuffer(window_width, window_height);
+
+
     /* Main loop. */
     float angle = 0.0f;
     bool done = false;
     SDL_Event event;
+    LOG(TRACE) << "Entering main loop...";
     while (!done) {
-        LOG(TRACE) << "Entering main loop...";
         while (SDL_PollEvent(&event) != 0) {
             if (event.type == SDL_QUIT) {
                 done = true;
@@ -147,7 +153,11 @@ int main(int argc, char** argv) {
                         break;
                     case SDLK_PRINTSCREEN:
                         LOG(INFO) << "Rendering screen shot...";
-
+                        frame_buffer_color->bind();
+                        draw();
+                        frame_buffer_color->write();
+                        frame_buffer_color->unbind();
+                        break;
                     default:
                         break;
                 }
@@ -213,6 +223,7 @@ int main(int argc, char** argv) {
 
     delete shaders;
     delete environmentMap;
+    delete frame_buffer_color;
 
     SDL_DestroyWindow(window);
     SDL_Quit();
