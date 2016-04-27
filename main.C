@@ -174,8 +174,8 @@ int main(int argc, char** argv) {
 
         shader_skybox->apply();
         scaleMat = glm::mat4();
-        scaleMat = glm::scale(scaleMat, glm::vec3(100.f, 100.f, 100.f));
-        shader_colour->updateWorldMatrix(scaleMat);
+        scaleMat = glm::scale(scaleMat, glm::vec3(512.f, 512.f, 512.f));
+        shader_skybox->updateWorldMatrix(scaleMat);
         skybox.draw();
 
         glFlush();
