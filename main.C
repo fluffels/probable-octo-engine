@@ -16,19 +16,48 @@
 using glm::vec3;
 using glm::vec4;
 
-const float STEP = 0.1f;
-const float ANGLE_DELTA = 3.14f;
-
-float window_width = 640.0f;
-float window_height = 480.0f;
-
-INITIALIZE_EASYLOGGINGPP
-
 struct Camera {
     vec3 at;
     vec3 eye;
     vec3 up;
 };
+
+const float STEP = 0.1f;
+const float ANGLE_DELTA = 3.14f;
+
+SDL_Window* window;
+float window_width = 640.0f;
+float window_height = 480.0f;
+
+ShaderManager* shaders;
+Shader* shader_colour;
+Shader* shader_skybox;
+
+Mesh* skybox;
+Mesh* origin;
+
+CubeMap* environmentMap;
+
+INITIALIZE_EASYLOGGINGPP
+
+void draw() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    shader_colour->apply();
+    auto scaleMat = glm::mat4();
+    scaleMat = glm::scale(scaleMat, glm::vec3(5.f, 5.f, 5.f));
+    shader_colour->updateWorldMatrix(scaleMat);
+    origin->draw();
+
+    shader_skybox->apply();
+    scaleMat = glm::mat4();
+    scaleMat = glm::scale(scaleMat, glm::vec3(512.f, 512.f, 512.f));
+    shader_skybox->updateWorldMatrix(scaleMat);
+    skybox->draw();
+
+    glFlush();
+    SDL_GL_SwapWindow(window);
+}
 
 int main(int argc, char** argv) {
     START_EASYLOGGINGPP(argc, argv);
@@ -36,16 +65,14 @@ int main(int argc, char** argv) {
 
     int result = SDL_Init(SDL_INIT_VIDEO);
     if (result != 0) {
-        LOG(ERROR) << "Could not initialize SDL: " << SDL_GetError();
-        return 1;
+        LOG(FATAL) << "Could not initialize SDL: " << SDL_GetError();
     }
 
-    SDL_Window* window = SDL_CreateWindow(argv[0], 0, 0, (int)window_width,
-                                          (int)window_height,
-                                          SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+    window = SDL_CreateWindow(argv[0], 0, 0, (int)window_width,
+                              (int)window_height,
+                              SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
     if (window == nullptr) {
-        LOG(ERROR) << "Could not create window: " << SDL_GetError();
-        return 2;
+        LOG(FATAL) << "Could not create window: " << SDL_GetError();
     }
 
     SDL_ShowCursor(SDL_DISABLE);
@@ -57,15 +84,13 @@ int main(int argc, char** argv) {
 
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     if (gl_context == nullptr) {
-        LOG(ERROR) << "Could not create OpenGL context: " << SDL_GetError();
-        return 3;
+        LOG(FATAL) << "Could not create OpenGL context: " << SDL_GetError();
     }
 
     glewExperimental = GL_TRUE;
     GLenum glewError = glewInit();
     if (glewError != GLEW_OK) {
-        LOG(ERROR) << "Could not initialize GLEW: " << glewGetErrorString(glewError);
-        return 4;
+        LOG(FATAL) << "Could not initialize GLEW: " << glewGetErrorString(glewError);
     }
 
     glEnable(GL_DEPTH);
@@ -76,31 +101,28 @@ int main(int argc, char** argv) {
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-    glActiveTexture(GL_TEXTURE0);
-    CubeMap* environmentMap = new CubeMap("terrain_");
+    environmentMap = new CubeMap("terrain_");
 
-    auto shaders = ShaderManager();
+    shaders = new ShaderManager();
 
-    auto shader_shadows = shaders.get("shadows");
-
-    auto shader_skybox = shaders.get("skybox");
+    shader_skybox = shaders->get("skybox");
     shader_skybox->apply();
-    auto skybox = Cube();
+    skybox = new Cube();
 
-    auto shader_colour = shaders.get("colour");
+    shader_colour = shaders->get("colour");
     shader_colour->apply();
-    auto origin = Origin();
+    origin = new Origin();
 
     auto camera = Camera();
     camera.eye = glm::vec3(0, 0, 5.0f);
     camera.at = glm::vec3(0, 0, 0);
     camera.up = glm::vec3(0, 1, 0);
     auto view = glm::lookAt(camera.eye, camera.at, camera.up);
-    shaders.updateViewMatrices(view);
+    shaders->updateViewMatrices(view);
 
     auto proj = glm::perspective(45.f, window_width / window_height, 0.1f,
                                  -100.f);
-    shaders.updateProjectionMatrices(proj);
+    shaders->updateProjectionMatrices(proj);
 
     float angle = 0.0f;
     bool done = false;
@@ -171,27 +193,15 @@ int main(int argc, char** argv) {
             camera.at -= STEP * camera.up;
         }
         view = glm::lookAt(camera.eye, camera.at, camera.up);
-        shaders.updateViewMatrices(view);
+        shaders->updateViewMatrices(view);
 
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        shader_colour->apply();
-        auto scaleMat = glm::mat4();
-        scaleMat = glm::scale(scaleMat, glm::vec3(5.f, 5.f, 5.f));
-        shader_colour->updateWorldMatrix(scaleMat);
-        origin.draw();
-
-        shader_skybox->apply();
-        scaleMat = glm::mat4();
-        scaleMat = glm::scale(scaleMat, glm::vec3(512.f, 512.f, 512.f));
-        shader_skybox->updateWorldMatrix(scaleMat);
-        skybox.draw();
-
-        glFlush();
-        SDL_GL_SwapWindow(window);
+        draw();
 
         angle += 0.01f;
     }
+
+    delete shaders;
+    delete environmentMap;
 
     SDL_DestroyWindow(window);
     SDL_Quit();
