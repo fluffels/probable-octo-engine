@@ -103,7 +103,7 @@ int main(int argc, char** argv) {
             } else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
                     case SDLK_ESCAPE:
-                        LOG(INFO) << "[INFO] Exiting normally at user request.";
+                        LOG(INFO) << "Exiting normally at user request.";
                         done = true;
                         break;
                     default:
