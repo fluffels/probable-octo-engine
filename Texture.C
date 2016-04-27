@@ -1,7 +1,7 @@
 #include "Texture.h"
 
 const string Texture::EXTENSION = ".png";
-const string Texture::PATH = "./texture/";
+const string Texture::PATH = "./textures/";
 
 Texture::
 Texture(const string &filename) :
@@ -89,7 +89,7 @@ loadTextureFromPNG(const string &filename, int &width, int &height) {
             << "RGBA format.";
     }
 
-    LOG(FATAL) << "Loaded " << filename << " as PNG. Width = " << png_width
+    LOG(INFO) << "Loaded " << filename << " as PNG. Width = " << png_width
         << ", height = " << png_height << ", bit depth = " << bits
         << ", colour type = " << colour_type << ".";
 
