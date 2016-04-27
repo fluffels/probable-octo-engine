@@ -24,6 +24,12 @@ float window_height = 480.0f;
 
 INITIALIZE_EASYLOGGINGPP
 
+struct Camera {
+    vec3 at;
+    vec3 eye;
+    vec3 up;
+};
+
 int main(int argc, char** argv) {
     START_EASYLOGGINGPP(argc, argv);
     LOG(TRACE) << "Initializing...";
@@ -46,7 +52,7 @@ int main(int argc, char** argv) {
     SDL_SetRelativeMouseMode(SDL_TRUE);
 
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 1 );
+    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
     SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
 
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
@@ -75,6 +81,8 @@ int main(int argc, char** argv) {
 
     auto shaders = ShaderManager();
 
+    auto shader_shadows = shaders.get("shadows");
+
     auto shader_skybox = shaders.get("skybox");
     shader_skybox->apply();
     auto skybox = Cube();
@@ -83,10 +91,11 @@ int main(int argc, char** argv) {
     shader_colour->apply();
     auto origin = Origin();
 
-    auto eye = glm::vec3(0, 0, 5.0f);
-    auto at = glm::vec3(0, 0, 0);
-    auto up = glm::vec3(0, 1, 0);
-    auto view = glm::lookAt(eye, at, up);
+    auto camera = Camera();
+    camera.eye = glm::vec3(0, 0, 5.0f);
+    camera.at = glm::vec3(0, 0, 0);
+    camera.up = glm::vec3(0, 1, 0);
+    auto view = glm::lookAt(camera.eye, camera.at, camera.up);
     shaders.updateViewMatrices(view);
 
     auto proj = glm::perspective(45.f, window_width / window_height, 0.1f,
@@ -116,52 +125,52 @@ int main(int argc, char** argv) {
                 const GLfloat LEFT_RIGHT_ROT = X_SCALED * ANGLE_DELTA;
                 const GLfloat UP_DOWN_ROT = Y_SCALED * ANGLE_DELTA;
 
-                vec3 tempD(at - eye);
+                vec3 tempD(camera.at - camera.eye);
                 vec4 d(tempD.x, tempD.y, tempD.z, 0.0f);
 
-                vec3 right = cross(tempD, up);
+                vec3 right = cross(tempD, camera.up);
 
                 mat4 rot;
                 rot = rotate(rot, UP_DOWN_ROT, right);
-                rot = rotate(rot, LEFT_RIGHT_ROT, up);
+                rot = rotate(rot, LEFT_RIGHT_ROT, camera.up);
 
                 d = rot * d;
 
-                at.x = eye.x + d.x;
-                at.y = eye.y + d.y;
-                at.z = eye.z + d.z;
+                camera.at.x = camera.eye.x + d.x;
+                camera.at.y = camera.eye.y + d.y;
+                camera.at.z = camera.eye.z + d.z;
             }
         }
 
-        glm::vec3 direction = STEP * glm::normalize(at - eye);
-        glm::vec3 right = STEP * glm::normalize(glm::cross(direction, up));
+        glm::vec3 direction = STEP * glm::normalize(camera.at - camera.eye);
+        glm::vec3 right = STEP * glm::normalize(glm::cross(direction, camera.up));
 
         auto keys = SDL_GetKeyboardState(nullptr);
         if (keys[SDL_SCANCODE_W]) {
-            eye += direction;
-            at += direction;
+            camera.eye += direction;
+            camera.at += direction;
         }
         if (keys[SDL_SCANCODE_S]) {
-            eye -= direction;
-            at -= direction;
+            camera.eye -= direction;
+            camera.at -= direction;
         }
         if (keys[SDL_SCANCODE_D]) {
-            eye += right;
-            at += right;
+            camera.eye += right;
+            camera.at += right;
         }
         if (keys[SDL_SCANCODE_A]) {
-            eye -= right;
-            at -= right;
+            camera.eye -= right;
+            camera.at -= right;
         }
         if (keys[SDL_SCANCODE_SPACE]) {
-            eye += STEP * up;
-            at += STEP * up;
+            camera.eye += STEP * camera.up;
+            camera.at += STEP * camera.up;
         }
         if (keys[SDL_SCANCODE_LCTRL]) {
-            eye -= STEP * up;
-            at -= STEP * up;
+            camera.eye -= STEP * camera.up;
+            camera.at -= STEP * camera.up;
         }
-        view = glm::lookAt(eye, at, up);
+        view = glm::lookAt(camera.eye, camera.at, camera.up);
         shaders.updateViewMatrices(view);
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
