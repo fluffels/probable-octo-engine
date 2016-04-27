@@ -8,6 +8,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 #include "Cube.h"
+#include "CubeMap.h"
 #include "Origin.h"
 #include "Shader.h"
 #include "ShaderManager.h"
@@ -60,9 +61,15 @@ int main(int argc, char** argv) {
     glEnable(GL_DEPTH);
     glEnable(GL_VERTEX_ARRAY);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);
     glDisable(GL_CULL_FACE);
 
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+
+    glActiveTexture(GL_TEXTURE0);
+    GLuint handle = 0;
+    glGenTextures(1, &handle);
+    CubeMap* environmentMap = new CubeMap("terrain_");
 
     auto shaders = ShaderManager();
 
@@ -101,8 +108,6 @@ int main(int argc, char** argv) {
                         break;
                 }
             } else if (event.type == SDL_MOUSEMOTION) {
-                cout << event.motion.xrel << " " << event.motion.yrel << endl;
-
                 const GLfloat X_SCALED = -(GLfloat)event.motion.xrel / window_width;
                 const GLfloat Y_SCALED = -(GLfloat)event.motion.yrel / window_height;
 
@@ -161,15 +166,15 @@ int main(int argc, char** argv) {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shader_colour->apply();
-        auto scale = glm::mat4();
-        scale = glm::scale(scale, glm::vec3(5.f, 5.f, 5.f));
-        shader_colour->updateWorldMatrix(scale);
+        auto scaleMat = glm::mat4();
+        scaleMat = glm::scale(scaleMat, glm::vec3(5.f, 5.f, 5.f));
+        shader_colour->updateWorldMatrix(scaleMat);
         origin.draw();
 
         shader_skybox->apply();
-        auto scale = glm::mat4();
-        scale = glm::scale(scale, glm::vec3(100.f, 100.f, 100.f));
-        shader_colour->updateWorldMatrix(scale);
+        scaleMat = glm::mat4();
+        scaleMat = glm::scale(scaleMat, glm::vec3(100.f, 100.f, 100.f));
+        shader_colour->updateWorldMatrix(scaleMat);
         skybox.draw();
 
         glFlush();

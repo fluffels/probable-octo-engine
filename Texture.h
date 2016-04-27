@@ -56,7 +56,6 @@ protected:
 
     /** Extension for texture files. */
     static const string EXTENSION;
+    /** Path to texture files. */
+    static const string PATH;
 };
-
-#endif
-

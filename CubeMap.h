@@ -42,5 +42,3 @@ private:
     /** Postfix for the negative z-axis texture. */
     const string NZ;
 };
-
-#endif

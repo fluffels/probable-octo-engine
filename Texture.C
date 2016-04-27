@@ -1,6 +1,9 @@
 #include "Texture.h"
 
+using std::cerr;
+
 const string Texture::EXTENSION = ".png";
+const string Texture::PATH = "./textures/";
 
 Texture::
 Texture(const string &filename) :
@@ -13,7 +16,7 @@ Texture(const string &filename) :
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
-    const string TEXTURE_FILE = "./textures/" + filename + EXTENSION;
+    const string TEXTURE_FILE = PATH + filename + EXTENSION;
 
     GLint width = 0;
     GLint height = 0;
@@ -41,7 +44,12 @@ bind() {
 
 GLubyte *Texture::
 loadTextureFromPNG(const string &filename, int &width, int &height) {
+    cerr << "[TRACE] Loading " << filename << endl;
+
     FILE *file = fopen(filename.c_str(), "r");
+    if (file == nullptr) {
+        perror("[ERROR] Could not open file");
+    }
 
     png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL,
                                                  NULL, NULL);

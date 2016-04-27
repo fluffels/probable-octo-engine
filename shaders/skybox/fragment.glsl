@@ -1,6 +1,6 @@
 #version 330
 
-layout(binding=8) uniform samplerCube cubeMap;
+uniform samplerCube cubeMap;
 
 in vec4 view_dir;
 
