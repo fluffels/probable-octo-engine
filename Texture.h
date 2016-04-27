@@ -1,13 +1,14 @@
 #pragma once
 
-#include <iostream>
+#include <cerrno>
+#include <cstring>
 #include <string>
 
 #include <GL/gl.h>
 #include <png.h>
 
-using std::cout;
-using std::endl;
+#include "easylogging++.h"
+
 using std::string;
 
 /**

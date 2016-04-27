@@ -13,3 +13,8 @@ string DynamicMessageException::
 getMessage() const throw() {
     return _message;
 }
+
+string DynamicMessageException::
+getPrefix() const throw() {
+    return "";
+}

@@ -1,9 +1,7 @@
 #include "Texture.h"
 
-using std::cerr;
-
 const string Texture::EXTENSION = ".png";
-const string Texture::PATH = "./textures/";
+const string Texture::PATH = "./texture/";
 
 Texture::
 Texture(const string &filename) :
@@ -44,32 +42,28 @@ bind() {
 
 GLubyte *Texture::
 loadTextureFromPNG(const string &filename, int &width, int &height) {
-    cerr << "[TRACE] Loading " << filename << endl;
+    LOG(TRACE) << "Loading " << filename;
 
     FILE *file = fopen(filename.c_str(), "r");
     if (file == nullptr) {
-        perror("[ERROR] Could not open file");
+        LOG(FATAL) << "Could not open '" << filename << "': "
+            << std::strerror(errno);
     }
 
     png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL,
                                                  NULL, NULL);
     if (png_ptr == NULL) {
-        printf("Could not initialize libPNG's read struct.\n");
-        exit(-1);
+        LOG(FATAL) << "Could not initialize libPNG's read struct.";
     }
 
     png_infop png_info_ptr = png_create_info_struct(png_ptr);
     if (png_info_ptr == NULL) {
-        printf("Could not initialize libPNG's info pointer.\n");
-        exit(-1);
+        LOG(FATAL) << "Could not initialize libPNG's info pointer.";
     }
 
     /* We jump back here if an error is encountered. */
     if (setjmp(png_jmpbuf(png_ptr))) {
-        printf("LibPNG encountered an error.\n");
-
-        png_destroy_read_struct(&png_ptr, &png_info_ptr, NULL);
-        exit(-1);
+        LOG(FATAL) << "LibPNG encountered an error.";
     }
 
     png_init_io(png_ptr, file);
@@ -91,14 +85,13 @@ loadTextureFromPNG(const string &filename, int &width, int &height) {
         colours_per_pixel = 4;
     }
     else {
-        cout << "[ERROR] Cannot load " << filename << ", since it is not in "
-        << "RGBA format." << endl;
-        exit(-1);
+        LOG(FATAL) << "Cannot load " << filename << ", since it is not in "
+            << "RGBA format.";
     }
 
-    cout << "[INFO] Loaded " << filename << " as PNG. Width = " << png_width
-    << ", height = " << png_height << ", bit depth = " << bits
-    << ", colour type = " << colour_type << "." << endl;
+    LOG(FATAL) << "Loaded " << filename << " as PNG. Width = " << png_width
+        << ", height = " << png_height << ", bit depth = " << bits
+        << ", colour type = " << colour_type << ".";
 
     unsigned char *data = new unsigned char[png_width * png_height * colours_per_pixel *
                                             bytes_per_colour];

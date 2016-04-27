@@ -1,6 +1,5 @@
 #pragma once
 
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -9,15 +8,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+#include "easylogging++.h"
+
 #include "CompilationError.h"
 #include "LinkError.h"
 
 using glm::vec3;
 using glm::mat4;
 using glm::value_ptr;
-using std::cerr;
-using std::cout;
-using std::endl;
 using std::string;
 using std::vector;
 

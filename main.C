@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include <SDL2/SDL.h>
 
 #include <GL/glew.h>
@@ -7,13 +5,14 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
+#include "easylogging++.h"
+
 #include "Cube.h"
 #include "CubeMap.h"
 #include "Origin.h"
 #include "Shader.h"
 #include "ShaderManager.h"
 
-using namespace std;
 using glm::vec3;
 using glm::vec4;
 
@@ -23,10 +22,15 @@ const float ANGLE_DELTA = 3.14f;
 float window_width = 640.0f;
 float window_height = 480.0f;
 
+INITIALIZE_EASYLOGGINGPP
+
 int main(int argc, char** argv) {
+    START_EASYLOGGINGPP(argc, argv);
+    LOG(TRACE) << "Initializing...";
+
     int result = SDL_Init(SDL_INIT_VIDEO);
     if (result != 0) {
-        cerr << "Could not initialize SDL: " << SDL_GetError() << endl;
+        LOG(ERROR) << "Could not initialize SDL: " << SDL_GetError();
         return 1;
     }
 
@@ -34,7 +38,7 @@ int main(int argc, char** argv) {
                                           (int)window_height,
                                           SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
     if (window == nullptr) {
-        cerr << "Could not create window: " << SDL_GetError() << endl;
+        LOG(ERROR) << "Could not create window: " << SDL_GetError();
         return 2;
     }
 
@@ -47,14 +51,14 @@ int main(int argc, char** argv) {
 
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     if (gl_context == nullptr) {
-        cerr << "Could not create OpenGL context: " << SDL_GetError() << endl;
+        LOG(ERROR) << "Could not create OpenGL context: " << SDL_GetError();
         return 3;
     }
 
     glewExperimental = GL_TRUE;
     GLenum glewError = glewInit();
     if (glewError != GLEW_OK) {
-        cerr << "Could not initialize GLEW: " << glewGetErrorString(glewError) << endl;
+        LOG(ERROR) << "Could not initialize GLEW: " << glewGetErrorString(glewError);
         return 4;
     }
 
@@ -99,7 +103,7 @@ int main(int argc, char** argv) {
             } else if (event.type == SDL_KEYDOWN) {
                 switch (event.key.keysym.sym) {
                     case SDLK_ESCAPE:
-                        cout << "[INFO] Exiting normally at user request." << endl;
+                        LOG(INFO) << "[INFO] Exiting normally at user request.";
                         done = true;
                         break;
                     default:
@@ -126,7 +130,6 @@ int main(int argc, char** argv) {
                 at.x = eye.x + d.x;
                 at.y = eye.y + d.y;
                 at.z = eye.z + d.z;
-
             }
         }
 

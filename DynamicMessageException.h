@@ -28,6 +28,11 @@ public:
       */
     virtual string getMessage() const throw();
 
+    /**
+      * Dynamic messages have a blank prefix by default.
+      */
+    virtual string getPrefix() const throw();
+
 private:
     string _message;
 };

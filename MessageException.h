@@ -6,7 +6,7 @@
 using std::string;
 
 /**
-  * This class encapsulatesthe type of exception that only has a message to 
+  * This class encapsulates the type of exception that only has a message to
   * print.
   */
 class MessageException : public std::exception {

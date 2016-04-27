@@ -42,7 +42,7 @@ Shader(const string &name) :
         glAttachShader(_programHandle, _tessEvaluationHandle);
     }
     else {
-        cout << "[INFO] Shader '" << name << "' lacks tesselation." << endl;
+        LOG(INFO) << "Shader '" << name << "' lacks tesselation.";
     }
 
     if (fileExists(GSF)) {
@@ -50,7 +50,7 @@ Shader(const string &name) :
         glAttachShader(_programHandle, _geometryShaderHandle);
     }
     else {
-        cout << "[INFO] Shader '" << name << "' lacks geometry shader." << endl;
+        LOG(INFO) << "Shader '" << name << "' lacks geometry shader.";
     }
 
     initShader(_fragmentShaderHandle, FSF, GL_FRAGMENT_SHADER);
@@ -156,7 +156,7 @@ findUniform(const char *name) {
 
     if (location == -1) {
         string sName(name);
-        cout << "[WARNING] Could not locate uniform '" << sName << "'." << endl;
+        LOG(WARNING) << "Could not locate uniform '" << sName << "'.";
     }
 
     return location;
