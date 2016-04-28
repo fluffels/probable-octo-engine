@@ -133,8 +133,6 @@ updateWorldMatrix(mat4 matrix) {
 void Shader::
 updateUniform(const char *name, GLint value) {
     GLint location = findUniform(name);
-    using namespace std;
-    cout << location << " " << value << endl << endl;
     glUniform1i(location, value);
 }
 
