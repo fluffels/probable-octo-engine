@@ -10,6 +10,9 @@ Experiments with C
 3. More realistic lighting.
 4. Grass.
 
+## Code Cleanup
+
+
 ## Miscellaneous
 
 1. Empty CompilationError is thrown if shaders/<prefix>/vertex.glsl isn't found.

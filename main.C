@@ -10,6 +10,7 @@
 #include "ColorFrameBuffer.h"
 #include "Cube.h"
 #include "CubeMap.h"
+#include "Grid.h"
 #include "Origin.h"
 #include "Shader.h"
 #include "ShaderManager.h"
@@ -19,6 +20,7 @@
 using glm::normalize;
 using glm::translate;
 using glm::scale;
+using glm::mat4;
 using glm::vec3;
 using glm::vec4;
 
@@ -44,9 +46,11 @@ ShaderManager* shaders;
 Shader* shader_colour;
 Shader* shader_skybox;
 Shader* shader_terrain;
+Shader* shader_water;
 
 Mesh* skybox;
 Mesh* origin;
+Mesh* water;
 Terrain* terrain;
 
 CubeMap* environment_map;
@@ -66,6 +70,9 @@ void draw() {
 
     shader_terrain->apply();
     terrain->draw();
+
+    shader_water->apply();
+    water->draw();
 
     glFlush();
     SDL_GL_SwapWindow(window);
@@ -156,6 +163,15 @@ int main(int argc, char** argv) {
                                   terrain->getDepth() / 2.f));
         shader_colour->updateWorldMatrix(world);
         origin = new Origin();
+    } {
+        shader_water = shaders->get("water");
+        shader_water->apply();
+        auto world = mat4();
+        world = translate(world, vec3(-terrain->getWidth() / 2.f,
+                                      -terrain->getMaxHeight() / 2.f + 25.f,
+                                      -terrain->getDepth() / 2.f));
+        shader_water->updateWorldMatrix(world);
+        water = new Grid(terrain->getWidth(), 4);
     }
 
 
