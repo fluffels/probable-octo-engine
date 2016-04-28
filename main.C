@@ -197,7 +197,7 @@ int main(int argc, char** argv) {
 
 
     /* Set up projection. */
-    auto proj = glm::perspective(45.0f, window_width / window_height, 0.1f, 100000.0f);
+    auto proj = glm::perspective(45.f, window_width / window_height, 100.f, 25000.f);
     shaders->updateProjectionMatrices(proj);
 
 
