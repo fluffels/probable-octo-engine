@@ -92,6 +92,8 @@ public:
       * @param name The uniform's name in the shader program.
       * @param value The uniform's new value.
       */
+    void updateUniform(const char *name, GLint value);
+
     void updateUniform(const char *name, float value);
 
     void updateUniform(const char *name, mat4 value);

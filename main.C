@@ -13,6 +13,7 @@
 #include "Origin.h"
 #include "Shader.h"
 #include "ShaderManager.h"
+#include "Texture.h"
 #include "Terrain.h"
 
 using glm::translate;
@@ -48,6 +49,7 @@ Mesh* origin;
 Mesh* terrain;
 
 CubeMap* environment_map;
+Texture* texture_terrain;
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -55,8 +57,8 @@ void draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glDisable(GL_CULL_FACE);
-        shader_skybox->apply();
-        skybox->draw();
+        /*shader_skybox->apply();
+        skybox->draw();*/
         shader_colour->apply();
         origin->draw();
     glEnable(GL_CULL_FACE);
@@ -93,7 +95,7 @@ int main(int argc, char** argv) {
     /* Initialize OpenGL. */
     LOG(TRACE) << "Initializing OpenGL...";
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     if (gl_context == nullptr) {
@@ -104,40 +106,50 @@ int main(int argc, char** argv) {
     if (glewError != GLEW_OK) {
         LOG(FATAL) << "Could not initialize GLEW: " << glewGetErrorString(glewError);
     }
+    glEnable(GL_BLEND);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_VERTEX_ARRAY);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 
     /* Load assets. */
     LOG(TRACE) << "Loading assets...";
-    environment_map = new CubeMap("terrain_");
     shaders = new ShaderManager();
+    {
+        shader_terrain = shaders->get("terrain");
+        shader_terrain->apply();
+        glActiveTexture(GL_TEXTURE0);
+        texture_terrain = new Texture("terrain");
+        shader_terrain->updateUniform("tex", 0);
+        auto world = mat4();
+        world = translate(world, vec3(-512.f, -200.f, -512.f));
+        shader_terrain->updateWorldMatrix(world);
+        terrain = new Terrain("heightmap.png");
+    }
     {
         shader_skybox = shaders->get("skybox");
         shader_skybox->apply();
+        glActiveTexture(GL_TEXTURE2);
+        environment_map = new CubeMap("terrain_");
+        shader_skybox->updateUniform("cubeMap", 2);
         auto world = mat4();
         world = scale(world, vec3(512.f, 512.f, 512.f));
         shader_skybox->updateWorldMatrix(world);
         skybox = new Cube();
-    } {
+    }
+    {
         shader_colour = shaders->get("colour");
         shader_colour->apply();
         auto world = mat4();
         world = scale(world, vec3(1024.f, 1024.f, 1024.f));
         shader_colour->updateWorldMatrix(world);
         origin = new Origin();
-    } {
-        shader_terrain = shaders->get("terrain");
-        shader_terrain->apply();
-        auto world = mat4();
-        world = translate(world, vec3(-512.f, -200.f, -512.f));
-        shader_terrain->updateWorldMatrix(world);
-        terrain = new Terrain("heightmap.png");
     }
 
 
     /* Set up light. */
+    shader_terrain->apply();
     shader_terrain->updateUniform("K_a", K_a);
     shader_terrain->updateUniform("K_d", K_d);
     auto light = Camera();
