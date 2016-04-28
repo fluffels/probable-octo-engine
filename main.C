@@ -134,6 +134,14 @@ int main(int argc, char** argv) {
     }
 
 
+    /* Set up light. */
+    auto light = Camera();
+    light.eye = vec3(1024.0f, 0.f, 0.f);
+    light.at = vec3(0.0f, 0.0f, 0.0f);
+    light.up = vec3(0.0f, 0.0f, -1.0f);
+    shader_terrain->updateUniform("light_pos", light.eye);
+
+
     /* Set up view. */
     auto camera = Camera();
     camera.eye = glm::vec3(512.0f, 200.0f, 512.0f);
