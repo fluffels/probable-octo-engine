@@ -134,13 +134,16 @@ int main(int argc, char** argv) {
     }
 
 
-    /* Set up camera. */
+    /* Set up view. */
     auto camera = Camera();
     camera.eye = glm::vec3(512.0f, 200.0f, 512.0f);
     camera.at = glm::vec3(0, 0, 0);
     camera.up = glm::vec3(0, 1, 0);
     auto view = glm::lookAt(camera.eye, camera.at, camera.up);
     shaders->updateViewMatrices(view);
+
+
+    /* Set up projection. */
     auto proj = glm::perspective(45.0f, window_width / window_height, 0.1f, 1500.0f);
     shaders->updateProjectionMatrices(proj);
 
