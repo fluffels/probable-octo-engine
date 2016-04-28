@@ -15,6 +15,8 @@
 #include "ShaderManager.h"
 #include "Terrain.h"
 
+using glm::translate;
+using glm::scale;
 using glm::vec3;
 using glm::vec4;
 
@@ -24,7 +26,7 @@ struct Camera {
     vec3 up;
 };
 
-const float STEP = 0.1f;
+const float STEP = 10.0f;
 const float ANGLE_DELTA = 3.14f;
 
 SDL_Window* window;
@@ -49,23 +51,29 @@ INITIALIZE_EASYLOGGINGPP
 void draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    {
-        glDisable(GL_CULL_FACE);
-        shader_skybox->apply();
-        skybox->draw();
-        glEnable(GL_CULL_FACE);
-    }
 
+    glDisable(GL_CULL_FACE);
+    {
+        shader_skybox->apply();
+        auto world = mat4();
+        world = scale(world, vec3(512.f, 512.f, 512.f));
+        shader_skybox->updateWorldMatrix(world);
+        skybox->draw();
+    }
     {
         shader_colour->apply();
-        auto scaleMat = glm::mat4();
-        scaleMat = glm::scale(scaleMat, glm::vec3(5.f, 5.f, 5.f));
-        shader_colour->updateWorldMatrix(scaleMat);
+        auto world = mat4();
+        world = scale(world, vec3(1024.f, 1024.f, 1024.f));
+        shader_colour->updateWorldMatrix(world);
         origin->draw();
     }
+    glEnable(GL_CULL_FACE);
 
     {
         shader_terrain->apply();
+        auto world = mat4();
+        world = translate(world, vec3(-512.f, -200.f, -512.f));
+        shader_terrain->updateWorldMatrix(world);
         terrain->draw();
     }
 
@@ -97,18 +105,19 @@ int main(int argc, char** argv) {
 
     /* Initialize OpenGL. */
     LOG(TRACE) << "Initializing OpenGL...";
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MAJOR_VERSION, 3 );
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_MINOR_VERSION, 2 );
-    SDL_GL_SetAttribute( SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE );
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GLContext gl_context = SDL_GL_CreateContext(window);
     if (gl_context == nullptr) {
-        LOG(FATAL) << "Could not create OpenGL context: " << SDL_GetError();
+        LOG(FATAL) << SDL_GetError();
     }
     glewExperimental = GL_TRUE;
     GLenum glewError = glewInit();
     if (glewError != GLEW_OK) {
         LOG(FATAL) << "Could not initialize GLEW: " << glewGetErrorString(glewError);
     }
+    glEnable(GL_DEPTH_TEST);
     glEnable(GL_VERTEX_ARRAY);
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
@@ -127,7 +136,7 @@ int main(int argc, char** argv) {
     shader_colour = shaders->get("colour");
     shader_colour->apply();
     origin = new Origin();
-    shader_terrain = shaders->get("transform");
+    shader_terrain = shaders->get("terrain");
     shader_terrain->apply();
     terrain = new Terrain("heightmap.png");
 
@@ -139,8 +148,7 @@ int main(int argc, char** argv) {
     camera.up = glm::vec3(0, 1, 0);
     auto view = glm::lookAt(camera.eye, camera.at, camera.up);
     shaders->updateViewMatrices(view);
-    auto proj = glm::perspective(45.f, window_width / window_height, 0.1f,
-                                 -100.f);
+    auto proj = glm::perspective(45.0f, window_width / window_height, 0.1f, 1500.0f);
     shaders->updateProjectionMatrices(proj);
 
 
