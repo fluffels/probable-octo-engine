@@ -36,8 +36,7 @@ findAttribute(const char *name) {
     GLint location = glGetAttribLocation((GLuint) currentProgram, name);
 
     if (location == -1) {
-        string sName(name);
-        cerr << "[WARNING] Could not find attribute '" + sName + "'." << endl;
+        LOG(WARNING) << "Could not find attribute '" << name << "'.";
     }
 
     return (GLuint) location;

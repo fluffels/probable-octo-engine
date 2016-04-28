@@ -5,6 +5,8 @@
 
 #include <GL/glew.h>
 
+#include "easylogging++.h"
+
 #include "LinkError.h"
 
 using std::cerr;
