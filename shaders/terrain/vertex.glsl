@@ -7,14 +7,11 @@ uniform mat4 world;
 uniform mat4 view;
 uniform mat4 projection;
 
-uniform vec3 light_pos;
-
 uniform float max_height;
 uniform sampler2D tex;
 
 out vec4 v_colour;
 out vec3 v_normal;
-out vec3 v_light_dir;
 
 vec4 pick_colour(float height) {
     if (height <= 50) {
@@ -37,5 +34,4 @@ void main() {
     gl_Position = projection * view * world_pos;
     v_colour = texture(tex, vec2(position.y/max_height, 0.5));
     v_normal = normal;
-    v_light_dir = normalize(light_pos - world_pos.xyz);
 }

@@ -16,6 +16,7 @@
 #include "Texture.h"
 #include "Terrain.h"
 
+using glm::normalize;
 using glm::translate;
 using glm::scale;
 using glm::vec3;
@@ -27,8 +28,8 @@ struct Camera {
     vec3 up;
 };
 
-const float K_a = 0.3f;
-const float K_d = 0.7f;
+const float K_a = 0.1f;
+const float K_d = 0.9f;
 
 const float STEP = 100.0f;
 const float ANGLE_DELTA = 3.14f;
@@ -166,7 +167,7 @@ int main(int argc, char** argv) {
     light.eye = vec3(1024.0f, 1024.f, 1024.f);
     light.at = vec3(0.0f, 0.0f, 0.0f);
     light.up = vec3(0.0f, 0.0f, -1.0f);
-    shader_terrain->updateUniform("light_pos", light.eye);
+    shader_terrain->updateUniform("light_dir", normalize(vec3(0.f, 0.25f, -1.f)));
 
 
     /* Set up view. */
