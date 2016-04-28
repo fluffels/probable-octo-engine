@@ -51,31 +51,15 @@ INITIALIZE_EASYLOGGINGPP
 void draw() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-
     glDisable(GL_CULL_FACE);
-    {
         shader_skybox->apply();
-        auto world = mat4();
-        world = scale(world, vec3(512.f, 512.f, 512.f));
-        shader_skybox->updateWorldMatrix(world);
         skybox->draw();
-    }
-    {
         shader_colour->apply();
-        auto world = mat4();
-        world = scale(world, vec3(1024.f, 1024.f, 1024.f));
-        shader_colour->updateWorldMatrix(world);
         origin->draw();
-    }
     glEnable(GL_CULL_FACE);
 
-    {
-        shader_terrain->apply();
-        auto world = mat4();
-        world = translate(world, vec3(-512.f, -200.f, -512.f));
-        shader_terrain->updateWorldMatrix(world);
-        terrain->draw();
-    }
+    shader_terrain->apply();
+    terrain->draw();
 
     glFlush();
     SDL_GL_SwapWindow(window);
@@ -126,19 +110,28 @@ int main(int argc, char** argv) {
     LOG(TRACE) << "Loading assets...";
     environmentMap = new CubeMap("terrain_");
     shaders = new ShaderManager();
-    shader_skybox = shaders->get("skybox");
-    shader_skybox->apply();
-    skybox = new Cube();
-    auto skyboxWorld = glm::mat4();
-    skyboxWorld = translate(skyboxWorld, vec3(512.0f, 200.0f, 512.0f));
-    skyboxWorld = scale(skyboxWorld, glm::vec3(512.f, 512.f, 512.f));
-    shader_skybox->updateWorldMatrix(skyboxWorld);
-    shader_colour = shaders->get("colour");
-    shader_colour->apply();
-    origin = new Origin();
-    shader_terrain = shaders->get("terrain");
-    shader_terrain->apply();
-    terrain = new Terrain("heightmap.png");
+    {
+        shader_skybox = shaders->get("skybox");
+        shader_skybox->apply();
+        auto world = mat4();
+        world = scale(world, vec3(512.f, 512.f, 512.f));
+        shader_skybox->updateWorldMatrix(world);
+        skybox = new Cube();
+    } {
+        shader_colour = shaders->get("colour");
+        shader_colour->apply();
+        auto world = mat4();
+        world = scale(world, vec3(1024.f, 1024.f, 1024.f));
+        shader_colour->updateWorldMatrix(world);
+        origin = new Origin();
+    } {
+        shader_terrain = shaders->get("terrain");
+        shader_terrain->apply();
+        auto world = mat4();
+        world = translate(world, vec3(-512.f, -200.f, -512.f));
+        shader_terrain->updateWorldMatrix(world);
+        terrain = new Terrain("heightmap.png");
+    }
 
 
     /* Set up camera. */
