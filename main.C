@@ -27,7 +27,7 @@ struct Camera {
 };
 
 const float K_a = 0.3f;
-const float K_d = 2.0f;
+const float K_d = 0.7f;
 
 const float STEP = 10.0f;
 const float ANGLE_DELTA = 3.14f;
