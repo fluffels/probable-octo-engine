@@ -21,7 +21,7 @@ using glm::normalize;
 using glm::vec3;
 
 using png::image;
-using png::rgb_pixel;
+using png::rgb_pixel_16;
 
 /**
   * Encapsulates terrain.
@@ -61,6 +61,24 @@ public:
       * @param height The new height.
       */
     void setHeight(unsigned x, unsigned z, GLfloat height);
+
+    /**
+     * Get the highest height on the terrain.
+     * @return a float
+     */
+    float getMaxHeight() const;
+
+    /**
+     * Get the width of the terrain.
+     * @return a float.
+     */
+    float getWidth() const;
+
+    /**
+     * Get the depth of the terrain.
+     * @return a float.
+     */
+    float getDepth() const;
 
 private:
     const unsigned COMPONENTS;
@@ -106,6 +124,12 @@ private:
     unsigned _width;
     /** Depth of the height map. */
     unsigned _depth;
+    /** Max height of the terrain. */
+    float _max_height;
+    /** Width of the terrain. */
+    float _terrain_width;
+    /** Depth of the terrain. */
+    float _terrain_depth;
     /** Height map. */
-    image<rgb_pixel> _hm;
+    image<rgb_pixel_16> _hm;
 };

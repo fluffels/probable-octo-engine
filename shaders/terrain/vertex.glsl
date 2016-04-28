@@ -9,6 +9,7 @@ uniform mat4 projection;
 
 uniform vec3 light_pos;
 
+uniform float max_height;
 uniform sampler2D tex;
 
 out vec4 v_colour;
@@ -34,7 +35,7 @@ vec4 pick_colour(float height) {
 void main() {
     vec4 world_pos = world * vec4(position, 1.0f);
     gl_Position = projection * view * world_pos;
-    v_colour = pick_colour(position.y);
+    v_colour = texture(tex, vec2(position.y/max_height, 0.5));
     v_normal = normal;
     v_light_dir = normalize(light_pos - world_pos.xyz);
 }

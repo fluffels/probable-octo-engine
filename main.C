@@ -30,7 +30,7 @@ struct Camera {
 const float K_a = 0.3f;
 const float K_d = 0.7f;
 
-const float STEP = 10.0f;
+const float STEP = 100.0f;
 const float ANGLE_DELTA = 3.14f;
 
 SDL_Window* window;
@@ -46,7 +46,7 @@ Shader* shader_terrain;
 
 Mesh* skybox;
 Mesh* origin;
-Mesh* terrain;
+Terrain* terrain;
 
 CubeMap* environment_map;
 Texture* texture_terrain;
@@ -122,10 +122,16 @@ int main(int argc, char** argv) {
         glActiveTexture(GL_TEXTURE0);
         texture_terrain = new Texture("terrain");
         shader_terrain->updateUniform("tex", 0);
-        auto world = mat4();
-        world = translate(world, vec3(-512.f, -200.f, -512.f));
-        shader_terrain->updateWorldMatrix(world);
         terrain = new Terrain("heightmap.png");
+        shader_terrain->updateUniform("max_height", terrain->getMaxHeight());
+        auto world = mat4();
+        world = translate(world, vec3(-terrain->getWidth() / 2.f,
+                                      -terrain->getMaxHeight() / 2.f,
+                                      -terrain->getDepth() / 2.f));
+        shader_terrain->updateWorldMatrix(world);
+        LOG(INFO) << "Maximum terrain height: " << terrain->getMaxHeight();
+        LOG(INFO) << "Terrain width: " << terrain->getWidth();
+        LOG(INFO) << "Terrain depth: " << terrain->getDepth();
     }
     {
         shader_skybox = shaders->get("skybox");
@@ -134,7 +140,9 @@ int main(int argc, char** argv) {
         environment_map = new CubeMap("terrain_");
         shader_skybox->updateUniform("cubeMap", 2);
         auto world = mat4();
-        world = scale(world, vec3(512.f, 512.f, 512.f));
+        world = scale(world, vec3(terrain->getWidth(),
+                                  terrain->getWidth(),
+                                  terrain->getDepth()));
         shader_skybox->updateWorldMatrix(world);
         skybox = new Cube();
     }
@@ -142,7 +150,9 @@ int main(int argc, char** argv) {
         shader_colour = shaders->get("colour");
         shader_colour->apply();
         auto world = mat4();
-        world = scale(world, vec3(1024.f, 1024.f, 1024.f));
+        world = scale(world, vec3(terrain->getWidth() / 2.f,
+                                  terrain->getMaxHeight() * 2.f,
+                                  terrain->getDepth() / 2.f));
         shader_colour->updateWorldMatrix(world);
         origin = new Origin();
     }
@@ -153,7 +163,7 @@ int main(int argc, char** argv) {
     shader_terrain->updateUniform("K_a", K_a);
     shader_terrain->updateUniform("K_d", K_d);
     auto light = Camera();
-    light.eye = vec3(1024.0f, 0.f, 0.f);
+    light.eye = vec3(1024.0f, 1024.f, 1024.f);
     light.at = vec3(0.0f, 0.0f, 0.0f);
     light.up = vec3(0.0f, 0.0f, -1.0f);
     shader_terrain->updateUniform("light_pos", light.eye);
@@ -161,7 +171,8 @@ int main(int argc, char** argv) {
 
     /* Set up view. */
     auto camera = Camera();
-    camera.eye = glm::vec3(512.0f, 200.0f, 512.0f);
+    auto camera_height = terrain->getMaxHeight() * 3.f;
+    camera.eye = glm::vec3(0.f, camera_height, -terrain->getDepth() / 2.f);
     camera.at = glm::vec3(0, 0, 0);
     camera.up = glm::vec3(0, 1, 0);
     auto view = glm::lookAt(camera.eye, camera.at, camera.up);
@@ -169,7 +180,7 @@ int main(int argc, char** argv) {
 
 
     /* Set up projection. */
-    auto proj = glm::perspective(45.0f, window_width / window_height, 0.1f, 1500.0f);
+    auto proj = glm::perspective(45.0f, window_width / window_height, 0.1f, 100000.0f);
     shaders->updateProjectionMatrices(proj);
 
 

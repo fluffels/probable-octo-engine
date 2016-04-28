@@ -9,6 +9,9 @@ Terrain(string heightmap) :
         _indices(NULL),
         _width(0),
         _depth(0),
+        _max_height(0.f),
+        _terrain_width(0.f),
+        _terrain_depth(0.f),
         _hm(heightmap.c_str()) {
     construct();
 }
@@ -22,6 +25,9 @@ Terrain(const Terrain &rhs) :
         _indices(NULL),
         _width(0),
         _depth(0),
+        _max_height(0.f),
+        _terrain_width(0.f),
+        _terrain_depth(0.f),
         _hm(rhs._hm) {
     construct();
 }
@@ -48,6 +54,21 @@ getHeight(unsigned x, unsigned z) {
 void Terrain::
 setHeight(unsigned x, unsigned z, GLfloat height) {
     getCoord(x, z)[Y] = height;
+}
+
+float Terrain::
+getMaxHeight() const {
+    return _max_height;
+}
+
+float Terrain::
+getWidth() const {
+    return _terrain_width;
+}
+
+float Terrain::
+getDepth() const {
+    return _terrain_depth;
 }
 
 float *Terrain::
@@ -116,21 +137,26 @@ getCoord(unsigned x, unsigned z) {
 
 void Terrain::
 generateVertices() {
-    const float Z_DELTA = 4.0f;
-    const float X_DELTA = 4.0f;
+    const float Z_DELTA = 10.0f;
+    const float X_DELTA = 10.0f;
 
     unsigned index = 0;
+    float Zcoord = 0.0f;
+    float Xcoord = 0.0f;
     for (unsigned z = 0; z < _depth; z++) {
-        const float Zcoord = (float) z * Z_DELTA;
-
+        Xcoord = 0.0f;
         for (unsigned x = 0; x < _width; x++) {
-            const float Xcoord = (float) x * X_DELTA;
-
+            float height = (float) _hm.get_pixel(x, z).red * (1/64.0f);
+            if (height > _max_height) _max_height = height;
             _vertices[index++] = Xcoord;
-            _vertices[index++] = ((float) _hm.get_pixel(x, z).red / 255.0f) * 250.0f;
+            _vertices[index++] = height;
             _vertices[index++] = Zcoord;
+            Xcoord += X_DELTA;
         }
+        Zcoord += Z_DELTA;
     }
+    _terrain_depth = Zcoord;
+    _terrain_width = Xcoord;
 }
 
 void Terrain::
