@@ -13,6 +13,7 @@
 #include "Origin.h"
 #include "Shader.h"
 #include "ShaderManager.h"
+#include "Terrain.h"
 
 using glm::vec3;
 using glm::vec4;
@@ -35,9 +36,11 @@ ColorFrameBuffer* frame_buffer_color;
 ShaderManager* shaders;
 Shader* shader_colour;
 Shader* shader_skybox;
+Shader* shader_terrain;
 
 Mesh* skybox;
 Mesh* origin;
+Mesh* terrain;
 
 CubeMap* environmentMap;
 
@@ -62,6 +65,11 @@ void draw() {
         scaleMat = glm::scale(scaleMat, glm::vec3(5.f, 5.f, 5.f));
         shader_colour->updateWorldMatrix(scaleMat);
         origin->draw();
+    }
+
+    {
+        shader_terrain->apply();
+        terrain->draw();
     }
 
     glFlush();
@@ -118,6 +126,9 @@ int main(int argc, char** argv) {
     shader_colour = shaders->get("colour");
     shader_colour->apply();
     origin = new Origin();
+    shader_terrain = shaders->get("transform");
+    shader_terrain->apply();
+    terrain = new Terrain("heightmap.png");
 
 
     /* Set up camera. */
