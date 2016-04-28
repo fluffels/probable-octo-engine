@@ -5,14 +5,14 @@ in vec3 v_normal;
 
 out vec4 colour;
 
-const float Ka = 0.3f;
-const float Kd = 2.0f;
+uniform float K_a;
+uniform float K_d;
 
 void main()
 {
-    float Ia = Ka;
-    float Id = Kd * max(dot(v_normal, v_light_dir), 0);
+    float I_a = K_a;
+    float I_d = K_d * max(dot(v_normal, v_light_dir), 0);
 
-    float I = Ia + Id;
+    float I = I_a + I_d;
     colour = I * vec4(1.0);
 }

@@ -26,6 +26,9 @@ struct Camera {
     vec3 up;
 };
 
+const float K_a = 0.3f;
+const float K_d = 2.0f;
+
 const float STEP = 10.0f;
 const float ANGLE_DELTA = 3.14f;
 
@@ -135,6 +138,8 @@ int main(int argc, char** argv) {
 
 
     /* Set up light. */
+    shader_terrain->updateUniform("K_a", K_a);
+    shader_terrain->updateUniform("K_d", K_d);
     auto light = Camera();
     light.eye = vec3(1024.0f, 0.f, 0.f);
     light.at = vec3(0.0f, 0.0f, 0.0f);
