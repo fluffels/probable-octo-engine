@@ -52,9 +52,6 @@ void draw() {
     {
         glDisable(GL_CULL_FACE);
         shader_skybox->apply();
-        auto scaleMat = glm::mat4();
-        scaleMat = glm::scale(scaleMat, glm::vec3(512.f, 512.f, 512.f));
-        shader_skybox->updateWorldMatrix(scaleMat);
         skybox->draw();
         glEnable(GL_CULL_FACE);
     }
@@ -123,6 +120,10 @@ int main(int argc, char** argv) {
     shader_skybox = shaders->get("skybox");
     shader_skybox->apply();
     skybox = new Cube();
+    auto skyboxWorld = glm::mat4();
+    skyboxWorld = translate(skyboxWorld, vec3(512.0f, 200.0f, 512.0f));
+    skyboxWorld = scale(skyboxWorld, glm::vec3(512.f, 512.f, 512.f));
+    shader_skybox->updateWorldMatrix(skyboxWorld);
     shader_colour = shaders->get("colour");
     shader_colour->apply();
     origin = new Origin();
@@ -133,7 +134,7 @@ int main(int argc, char** argv) {
 
     /* Set up camera. */
     auto camera = Camera();
-    camera.eye = glm::vec3(0, 0, 5.0f);
+    camera.eye = glm::vec3(512.0f, 200.0f, 512.0f);
     camera.at = glm::vec3(0, 0, 0);
     camera.up = glm::vec3(0, 1, 0);
     auto view = glm::lookAt(camera.eye, camera.at, camera.up);
