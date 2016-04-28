@@ -47,7 +47,7 @@ Mesh* skybox;
 Mesh* origin;
 Mesh* terrain;
 
-CubeMap* environmentMap;
+CubeMap* environment_map;
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -111,7 +111,7 @@ int main(int argc, char** argv) {
 
     /* Load assets. */
     LOG(TRACE) << "Loading assets...";
-    environmentMap = new CubeMap("terrain_");
+    environment_map = new CubeMap("terrain_");
     shaders = new ShaderManager();
     {
         shader_skybox = shaders->get("skybox");
@@ -251,7 +251,7 @@ int main(int argc, char** argv) {
     }
 
     delete shaders;
-    delete environmentMap;
+    delete environment_map;
     delete frame_buffer_color;
 
     SDL_DestroyWindow(window);
