@@ -73,8 +73,6 @@ Shader(const string &name) :
         throw LinkError(sLog);
     }
 
-    glUseProgram(_programHandle);
-
     _projectionLocation = findUniform("projection");
     _viewLocation = findUniform("view");
     _worldLocation = findUniform("world");
@@ -130,6 +128,14 @@ updateWorldMatrix(mat4 matrix) {
     if (isCurrentProgram()) {
         glUniformMatrix4fv(_worldLocation, 1, false, value_ptr(_worldMatrix));
     }
+}
+
+void Shader::
+updateUniform(const char *name, GLint value) {
+    GLint location = findUniform(name);
+    using namespace std;
+    cout << location << " " << value << endl << endl;
+    glUniform1i(location, value);
 }
 
 void Shader::
