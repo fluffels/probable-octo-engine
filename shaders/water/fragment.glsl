@@ -1,17 +1,17 @@
 #version 330
 
-const vec3 light = normalize(vec3(1.0f, 1.0f, 1.0f));
-
-const float Ka = 0.5f;
-const float Kd = 0.5f;
-
 in vec3 normal;
 
 out vec4 fragment;
 
+uniform vec3 light_dir;
+
+const float Ka = 0.5f;
+const float Kd = 0.5f;
+
 void main()
 {
-   float intensity = Ka + Kd * dot(light, normal);
+   float intensity = Ka + Kd * dot(light_dir, normal);
 
    vec3 colour = vec3(0.4, 0.4, 1.0f);
 

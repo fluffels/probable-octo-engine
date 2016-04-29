@@ -74,6 +74,8 @@ void draw() {
     terrain->draw();
 
     shader_water->apply();
+    float time = SDL_GetTicks() / 1000.f;
+    shader_water->updateUniform("time", time);
     water->draw();
 
     glFlush();
@@ -196,7 +198,9 @@ int main(int argc, char** argv) {
     light.eye = vec3(1024.0f, 1024.f, 1024.f);
     light.at = vec3(0.0f, 0.0f, 0.0f);
     light.up = vec3(0.0f, 0.0f, -1.0f);
-    shader_terrain->updateUniform("light_dir", normalize(vec3(0.f, 0.25f, -1.f)));
+    auto light_dir = normalize(vec3(0.f, 0.25f, -1.f));
+    shader_terrain->updateUniform("light_dir", light_dir);
+    shader_water->updateUniform("light_dir", light_dir);
 
 
     /* Set up view. */

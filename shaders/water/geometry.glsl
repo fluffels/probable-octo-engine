@@ -8,10 +8,10 @@ uniform mat4 view;
 uniform mat4 world;
 
 /* Parameters. */
-uniform float amplitude = 5.0f;
+uniform float amplitude = 20.0f;
 uniform float time = 0.0f;
 uniform float length = 60.0f;
-uniform float speed = 0.2f;
+uniform float speed = 2.f;
 
 uniform vec2 dir1 = normalize(vec2(0.092f, 0.819f));
 uniform vec2 dir2 = normalize(vec2(0.983f, 0.690f));
