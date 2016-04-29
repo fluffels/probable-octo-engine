@@ -26,6 +26,7 @@ float phi = speed * w;
 float Q = 1 / (w * A);
 
 out vec3 normal;
+out vec3 view_dir;
 
 float waveFunc(vec2 dir, vec2 coords)
 {
@@ -100,6 +101,9 @@ void main()
       n += gerstNormalFunc(dir5, worldP.xz, time);
 
       normal = normalize(n);
+
+      vec4 viewer = inverse(view) * vec4(0, 0, 0, 1);
+      view_dir = normalize(viewer.xyz - position);
 
       EmitVertex();
    }

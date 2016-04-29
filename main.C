@@ -192,10 +192,11 @@ int main(int argc, char** argv) {
                                       -terrain->getDepth() / 2.f));
         shader_water = shaders->get("water");
         shader_water->apply();
-        shader_water->updateUniform("K_a", 0.3f);
+        shader_water->updateUniform("K_a", 0.1f);
         shader_water->updateUniform("K_d", 0.0f);
+        shader_water->updateUniform("K_s", 0.9f);
         shader_water->updateWorldMatrix(world);
-        water = new Grid(terrain->getDepth(), 10.f);
+        water = new Grid(terrain->getDepth(), 1000.f);
     }
 
 
@@ -308,6 +309,12 @@ int main(int argc, char** argv) {
             camera.at -= STEP * camera.up;
         }
         view = glm::lookAt(camera.eye, camera.at, camera.up);
+        // 0 = right
+        // 1 = up
+        // 2 = at
+        // 3 = eye . at
+        auto v = view[3];
+        LOG(DEBUG) << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3];
         shaders->updateViewMatrices(view);
 
         draw();
