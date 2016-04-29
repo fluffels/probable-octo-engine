@@ -37,8 +37,10 @@ const float STEP = 100.0f;
 const float ANGLE_DELTA = 3.14f;
 
 SDL_Window* window;
-float window_width = 1366.0f;
-float window_height = 768.0f;
+float window_width = 640.0f;
+float window_height = 480.0f;
+uint64_t frequency = 0;
+uint64_t time_last_frame = 0;
 
 ColorFrameBuffer* frame_buffer_color;
 
@@ -76,6 +78,14 @@ void draw() {
 
     glFlush();
     SDL_GL_SwapWindow(window);
+
+    auto time_this_frame = SDL_GetPerformanceCounter();
+    auto delta = (time_this_frame - time_last_frame) / (float)frequency;
+    time_last_frame = time_this_frame;
+    char title[255];
+    auto fps = 1.f / delta;
+    sprintf(title, "FPS: %f", fps);
+    SDL_SetWindowTitle(window, title);
 }
 
 int main(int argc, char** argv) {
@@ -92,13 +102,15 @@ int main(int argc, char** argv) {
     }
     window = SDL_CreateWindow(argv[0], 0, 0, (int)window_width,
                               (int)window_height,
-                              SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL |
-                                      SDL_WINDOW_FULLSCREEN);
+                              SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
     if (window == nullptr) {
         LOG(FATAL) << "Could not create window: " << SDL_GetError();
     }
     SDL_ShowCursor(SDL_DISABLE);
     SDL_SetRelativeMouseMode(SDL_TRUE);
+    frequency = SDL_GetPerformanceFrequency();
+    time_last_frame = SDL_GetPerformanceCounter();
+    LOG(INFO) << "Performance counter frequency: " << frequency;
 
 
     /* Initialize OpenGL. */
