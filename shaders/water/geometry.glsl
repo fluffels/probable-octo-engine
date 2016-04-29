@@ -8,10 +8,10 @@ uniform mat4 view;
 uniform mat4 world;
 
 /* Parameters. */
-uniform float amplitude = 20.0f;
+uniform float amplitude = 10.0f;
 uniform float time = 0.0f;
-uniform float length = 60.0f;
-uniform float speed = 2.f;
+uniform float length = 200.0f;
+uniform float speed = 2.0f;
 
 uniform vec2 dir1 = normalize(vec2(0.092f, 0.819f));
 uniform vec2 dir2 = normalize(vec2(0.983f, 0.690f));
@@ -79,11 +79,11 @@ void main()
       vec4 worldP = world * vec4(position, 1.0f);
 
       float accum = 0.0f;
-      accum += waveFunc(dir1, worldP.xz) * cos(time / 1000.0f);
-      accum += waveFunc(dir2, worldP.xz) * cos(time / 1500.0f);
-      accum += waveFunc(dir3, worldP.xz) * cos(time / 2000.0f);
-      accum += waveFunc(dir4, worldP.xz) * cos(time / 2500.0f);
-      accum += waveFunc(dir5, worldP.xz) * cos(time / 3000.0f);
+      accum += waveFunc(dir1, worldP.xz) * cos(time);
+      accum += waveFunc(dir2, worldP.xz) * cos(time);
+      accum += waveFunc(dir3, worldP.xz) * cos(time);
+      accum += waveFunc(dir4, worldP.xz) * cos(time);
+      accum += waveFunc(dir5, worldP.xz) * cos(time);
       accum /= 5;
 
       position.x += accum * Q;
@@ -93,11 +93,11 @@ void main()
       gl_Position = projection * view * world * vec4(position, 1.0f);
 
       vec3 n = vec3(0, 0, 0);
-      n += normalFunc(dir1, worldP.xz, time / 1000.0f);
-      n += normalFunc(dir2, worldP.xz, time / 1500.0f);
-      n += normalFunc(dir3, worldP.xz, time / 2000.0f);
-      n += normalFunc(dir4, worldP.xz, time / 2500.0f);
-      n += normalFunc(dir5, worldP.xz, time / 3000.0f);
+      n += gerstNormalFunc(dir1, worldP.xz, time);
+      n += gerstNormalFunc(dir2, worldP.xz, time);
+      n += gerstNormalFunc(dir3, worldP.xz, time);
+      n += gerstNormalFunc(dir4, worldP.xz, time);
+      n += gerstNormalFunc(dir5, worldP.xz, time);
 
       normal = normalize(n);
 

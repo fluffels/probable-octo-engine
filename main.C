@@ -30,8 +30,12 @@ struct Camera {
     vec3 up;
 };
 
-const float K_a = 0.1f;
-const float K_d = 0.9f;
+struct Material {
+    float K_a;
+    float K_d;
+    float K_s;
+    vec3 colour;
+};
 
 const float STEP = 100.0f;
 const float ANGLE_DELTA = 3.14f;
@@ -151,6 +155,8 @@ int main(int argc, char** argv) {
         world = translate(world, vec3(-terrain->getWidth() / 2.f,
                                       -terrain->getMaxHeight() / 2.f,
                                       -terrain->getDepth() / 2.f));
+        shader_terrain->updateUniform("K_a", 0.1f);
+        shader_terrain->updateUniform("K_d", 0.9f);
         shader_terrain->updateWorldMatrix(world);
         LOG(INFO) << "Maximum terrain height: " << terrain->getMaxHeight();
         LOG(INFO) << "Terrain width: " << terrain->getWidth();
@@ -166,27 +172,30 @@ int main(int argc, char** argv) {
         world = scale(world, vec3(terrain->getWidth(),
                                   terrain->getWidth(),
                                   terrain->getDepth()));
-        shader_skybox->updateWorldMatrix(world);
         skybox = new Cube();
+        shader_terrain->apply();
+        shader_skybox->updateWorldMatrix(world);
     }
     {
-        shader_colour = shaders->get("colour");
-        shader_colour->apply();
         auto world = mat4();
         world = scale(world, vec3(terrain->getWidth() / 2.f,
                                   terrain->getMaxHeight() * 2.f,
                                   terrain->getDepth() / 2.f));
+        shader_colour = shaders->get("colour");
+        shader_colour->apply();
         shader_colour->updateWorldMatrix(world);
         origin = new Origin();
     } {
-        shader_water = shaders->get("water");
-        shader_water->apply();
         auto world = mat4();
         world = translate(world, vec3(-terrain->getWidth() / 2.f,
                                       -terrain->getMaxHeight() / 2.f + 25.f,
                                       -terrain->getDepth() / 2.f));
+        shader_water = shaders->get("water");
+        shader_water->apply();
+        shader_water->updateUniform("K_a", 0.3f);
+        shader_water->updateUniform("K_d", 0.0f);
         shader_water->updateWorldMatrix(world);
-        water = new Grid(terrain->getWidth(), 4);
+        water = new Grid(terrain->getDepth(), 10.f);
     }
 
 
@@ -197,13 +206,9 @@ int main(int argc, char** argv) {
     light.up = vec3(0.0f, 0.0f, -1.0f);
     auto light_dir = normalize(vec3(0.f, 0.25f, -1.f));
     shader_terrain->apply();
-    shader_terrain->updateUniform("K_a", K_a);
-    shader_terrain->updateUniform("K_d", K_d);
     shader_terrain->updateUniform("light_dir", light_dir);
     shader_water->apply();
     shader_water->updateUniform("light_dir", light_dir);
-    shader_water->updateUniform("K_a", K_a);
-    shader_water->updateUniform("K_d", K_d);
 
 
     /* Set up view. */

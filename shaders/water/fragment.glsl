@@ -12,7 +12,6 @@ const vec4 colour = vec4(0.4, 0.4, 1.0f, 0.7f);
 
 void main()
 {
-   float I = K_a + K_d * dot(light_dir, normal);
-
+   float I = K_a + K_d * max(dot(light_dir, normal), 0);
    fragment = vec4(I * colour.rgb, colour.a);
 }
