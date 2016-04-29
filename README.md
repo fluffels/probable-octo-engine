@@ -12,6 +12,8 @@ Experiments with C
 
 ## Code Cleanup
 
+1. Make sure there's no code to be reused between Grid and Terrain.
+1. Research ways to reuse code between shader files. Possibly some sort of `#include` mechanism.
 
 ## Miscellaneous
 
