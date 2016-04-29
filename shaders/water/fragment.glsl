@@ -4,17 +4,15 @@ in vec3 normal;
 
 out vec4 fragment;
 
+uniform float K_a;
+uniform float K_d;
 uniform vec3 light_dir;
 
-const float Ka = 0.5f;
-const float Kd = 0.5f;
+const vec4 colour = vec4(0.4, 0.4, 1.0f, 0.7f);
 
 void main()
 {
-   float intensity = Ka + Kd * dot(light_dir, normal);
+   float I = K_a + K_d * dot(light_dir, normal);
 
-   vec3 colour = vec3(0.4, 0.4, 1.0f);
-
-   colour = intensity * colour;
-   fragment = vec4(colour, 0.7f);
+   fragment = vec4(I * colour.rgb, colour.a);
 }

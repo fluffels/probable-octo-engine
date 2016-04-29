@@ -191,16 +191,19 @@ int main(int argc, char** argv) {
 
 
     /* Set up light. */
-    shader_terrain->apply();
-    shader_terrain->updateUniform("K_a", K_a);
-    shader_terrain->updateUniform("K_d", K_d);
     auto light = Camera();
     light.eye = vec3(1024.0f, 1024.f, 1024.f);
     light.at = vec3(0.0f, 0.0f, 0.0f);
     light.up = vec3(0.0f, 0.0f, -1.0f);
     auto light_dir = normalize(vec3(0.f, 0.25f, -1.f));
+    shader_terrain->apply();
+    shader_terrain->updateUniform("K_a", K_a);
+    shader_terrain->updateUniform("K_d", K_d);
     shader_terrain->updateUniform("light_dir", light_dir);
+    shader_water->apply();
     shader_water->updateUniform("light_dir", light_dir);
+    shader_water->updateUniform("K_a", K_a);
+    shader_water->updateUniform("K_d", K_d);
 
 
     /* Set up view. */
