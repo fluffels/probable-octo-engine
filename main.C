@@ -37,8 +37,8 @@ const float STEP = 100.0f;
 const float ANGLE_DELTA = 3.14f;
 
 SDL_Window* window;
-float window_width = 640.0f;
-float window_height = 480.0f;
+float window_width = 1366.0f;
+float window_height = 768.0f;
 
 ColorFrameBuffer* frame_buffer_color;
 
@@ -92,7 +92,8 @@ int main(int argc, char** argv) {
     }
     window = SDL_CreateWindow(argv[0], 0, 0, (int)window_width,
                               (int)window_height,
-                              SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
+                              SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL |
+                                      SDL_WINDOW_FULLSCREEN);
     if (window == nullptr) {
         LOG(FATAL) << "Could not create window: " << SDL_GetError();
     }
