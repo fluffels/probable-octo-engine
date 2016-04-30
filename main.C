@@ -309,12 +309,6 @@ int main(int argc, char** argv) {
             camera.at -= STEP * camera.up;
         }
         view = glm::lookAt(camera.eye, camera.at, camera.up);
-        // 0 = right
-        // 1 = up
-        // 2 = at
-        // 3 = eye . at
-        auto v = view[3];
-        LOG(DEBUG) << v[0] << ", " << v[1] << ", " << v[2] << ", " << v[3];
         shaders->updateViewMatrices(view);
 
         draw();
