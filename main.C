@@ -161,8 +161,7 @@ int main(int argc, char** argv) {
         LOG(INFO) << "Maximum terrain height: " << terrain->getMaxHeight();
         LOG(INFO) << "Terrain width: " << terrain->getWidth();
         LOG(INFO) << "Terrain depth: " << terrain->getDepth();
-    }
-    {
+    } {
         shader_skybox = shaders->get("skybox");
         shader_skybox->apply();
         glActiveTexture(GL_TEXTURE2);
@@ -175,8 +174,7 @@ int main(int argc, char** argv) {
         skybox = new Cube();
         shader_terrain->apply();
         shader_skybox->updateWorldMatrix(world);
-    }
-    {
+    } {
         auto world = mat4();
         world = scale(world, vec3(terrain->getWidth() / 2.f,
                                   terrain->getMaxHeight() * 2.f,
