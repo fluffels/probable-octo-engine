@@ -27,5 +27,12 @@
 *.out
 *.app
 
+# CMake Cruft
+CMakeCache.txt
+CMakeFiles/
+Makefile
+cmake_install.cmake
+
 screen_shot.png
 logs/
+probable_octo_engine
